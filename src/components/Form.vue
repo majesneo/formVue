@@ -1,33 +1,31 @@
 <template>
   <div id="form">
     <form>
-      <label for="name">ИФО</label>
-      <input type="text" v-model="form.name" required> <br>
+      <label for="name">ФИО</label>
+      <input id="name" type="text" v-model="form.name" required> <br>
       <span v-if="msg.name">{{ msg.name }}</span>
       <br>
       <label for="email">Email</label>
-      <input type="text" v-model="form.email" required> <br>
+      <input id="email" type="text" v-model="form.email" required> <br>
       <span v-if="msg.email">{{ msg.email }}</span>
       <br>
       <label for="tel">Телефон</label>
-      <input @focusout="validateTel" type="text" v-model="form.tel" required> <br>
+      <input id="tel" type="text" v-model="form.tel" required> <br>
       <span v-if="msg.tel">{{ msg.tel }}</span>
 
       <p>Страна</p>
-      <select v-model="form.country">
+      <select v-model="form.country" required>
         <option v-for="data in arrData">{{ data.name }}</option>
       </select>
       <br>
       <p>Регион</p>
       <select v-model="form.region">
         <option v-for="data in arrRegion">{{ data.name }}</option>
-        <option></option>
       </select>
       <br>
       <p>Город</p>
-      <select v-model="form.city">
+      <select v-model="form.city" required>
         <option v-for="data in arrCities">{{ data.name }}</option>
-        <option></option>
       </select>
       <br>
       <button v-bind:disabled="isDisabled" type="submit">Отправить заявку</button>
@@ -88,25 +86,30 @@ export default {
   },
   methods: {
     validateEmail(value) {
-      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
+      if (!value) {
+        this.msg['email'] = 'Введите Email'
+      }
+      if (/^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i.test(value)) {
         this.msg['email'] = '';
       } else {
         this.msg['email'] = 'Неверный Email';
       }
     },
     validateName(value) {
-      if (/^[a-zA-Z ]+$/gi.test(value)) {
+      if (!value) {
+        this.msg['name'] = 'Введите ФИО'
+      } else if (/^([a-zA-ZА-Яа-яё ]{3,4})+$/gi.test(value)) {
         this.msg['name'] = '';
       } else {
-        this.msg['name'] = 'Вводите в поле ИФО только буквы';
+        this.msg['name'] = 'Вводите ФИО через пробел,только буквы';
       }
     },
     validateTel(value) {
       if (!value) {
         this.msg['tel'] = 'Введите номер телефона'
       } else {
-        if (!this.form.tel.match(/^\+(?:[0-9]?)/g)) {
-          this.msg['tel'] = 'Введите номер телефона формата с +'
+        if (!this.form.tel.match(/^\+[0-9]/g)) {
+          this.msg['tel'] = 'Введите номер телефона формат +'
         } else {
           this.msg['tel'] = '';
         }
@@ -137,7 +140,6 @@ export default {
     validButton() {
       this.isDisabled = false;
       for (const formkey in this.form) {
-
         if (!this.form[formkey] && formkey !== 'region') {
           this.isDisabled = true;
         }
@@ -168,8 +170,8 @@ label {
 }
 
 span {
-  padding-top: 0px;
-  margin-top: 0px;
+  padding-top: 0;
+  margin-top: 0;
   font-size: 12px;
   color: red;
 }
@@ -179,8 +181,10 @@ input {
   border: 1px double rgb(102, 97, 96);
   border-radius: 4px;
 }
-button{
-  margin-top: 10px;
+
+button {
+  margin-top: 15px;
+  height: 30px;
 }
 
 </style>
